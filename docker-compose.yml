@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    image: node:14  # Aquí usas la imagen oficial de Node.js (o cualquier otra que necesites)
+    container_name: tp3
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=mongodb://root:example@mongo:27017/todo-api?authSource=admin
+    depends_on:
+      - mongo
+    volumes:
+      - .:/app  # Esto monta tu directorio actual en /app del contenedor para que pueda acceder a tu código
+    working_dir: /app  # Esto establece el directorio de trabajo donde se ejecuta la aplicación
+    command: ["npm", "start"]  # Aquí defines el comando para arrancar tu aplicación
+
+volumes:
+  mongo-data:
